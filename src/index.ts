@@ -44,7 +44,7 @@ const deleteSymlinkAndGitIgnore = (filename: string, target: string) => {
   if (existsSync(filename)) {
     rmSync(filename)
   }
-  symlinkSync(target, filename)
+  symlinkSync(target, filename, "dir")
   writeFileSync(join(filename, ".gitignore"), "*")
 }
 
@@ -53,7 +53,7 @@ const symlinkCodeBattles = () => {
   const codeBattlesComponentsDirectory = join(
     dirname,
     "node_modules",
-    "code-battles-components",
+    "code-battles",
     "dist"
   )
   deleteSymlinkAndGitIgnore(
@@ -75,7 +75,7 @@ const buildAPIDocumentation = () => {
       "..",
       "..",
       "node_modules",
-      "code-battles-components",
+      "code-battles",
       "dist",
       "pdoc-template"
     )} -o ..`
@@ -97,10 +97,11 @@ export default function CodeBattles(): Plugin {
       const onFileChange = (f: string) => {
         if (f.endsWith(".py")) {
           refresh()
+          server.ws.send({ type: "full-reload" })
         }
       }
 
-      server.watcher.add(["public/scripts/*.py"])
+      server.watcher.add(join(dirname, "public", "scripts"))
       server.watcher.on("add", onFileChange)
       server.watcher.on("change", onFileChange)
       server.watcher.on("unlink", onFileChange)
