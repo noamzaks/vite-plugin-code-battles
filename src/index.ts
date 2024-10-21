@@ -8,6 +8,7 @@ import {
   writeFileSync,
   rmSync,
   symlinkSync,
+  copyFileSync,
 } from "fs"
 import { join, resolve } from "path"
 import { chdir } from "process"
@@ -85,12 +86,24 @@ const buildAPIDocumentation = () => {
   console.log("✨ Refreshed generated API documentation")
 }
 
+const copyFirebase = () => {
+  chdir(join(dirname))
+  const firebaseJsonPath = join("src", "firebase.json")
+  if (existsSync(firebaseJsonPath)) {
+    copyFileSync(firebaseJsonPath, join("public", "firebase.json"))
+    console.log(
+      "✨ Copied firebase configuration to `public` to enable competitor CLI support"
+    )
+  }
+}
+
 export default function CodeBattles(): Plugin {
   return {
     name: "code-battles",
     buildStart() {
       symlinkCodeBattles()
       buildAPIDocumentation()
+      copyFirebase()
       refresh()
     },
     configureServer(server) {
