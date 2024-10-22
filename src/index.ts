@@ -28,7 +28,10 @@ const refresh = () => {
   config.files = {}
   const files = readdirSync(directory, { recursive: true }).sort()
   for (const file of files) {
-    if (file.includes("__pycache__") || !file.toString().endsWith(".py")) {
+    if (
+      file.includes("__pycache__") ||
+      (!file.toString().endsWith(".py") && !file.toString().endsWith(".pyi"))
+    ) {
       continue
     }
 
