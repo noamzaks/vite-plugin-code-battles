@@ -90,7 +90,10 @@ const copyFirebase = () => {
   chdir(join(dirname))
   const firebaseJsonPath = join("src", "firebase.json")
   if (existsSync(firebaseJsonPath)) {
-    copyFileSync(firebaseJsonPath, join("public", "firebase.json"))
+    copyFileSync(
+      firebaseJsonPath,
+      join("public", "firebase-configuration.json")
+    )
     console.log(
       "✨ Copied firebase configuration to `public` to enable competitor CLI support"
     )
