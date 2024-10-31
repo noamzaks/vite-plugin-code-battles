@@ -14,9 +14,14 @@ import { join, resolve } from "path"
 import { chdir } from "process"
 import type { Plugin } from "vite"
 
+interface CodeBattlesOptions {
+  /** Additional Python packages to install, see https://docs.pyscript.net/2023.12.1/user-guide/configuration/#packages */
+  packages?: string[]
+}
+
 const dirname = resolve(".")
 
-const refresh = () => {
+const refresh = (options: CodeBattlesOptions) => {
   chdir(dirname)
   const directory = join("public", "scripts")
   const file = join("public", "config.json")
@@ -24,8 +29,8 @@ const refresh = () => {
   if (existsSync(file)) {
     config = JSON.parse(readFileSync(file).toString())
   }
-  const originalFiles = config.files
-  config.files = {}
+  const originalConfig = { ...config }
+  config = { files: {} }
   const files = readdirSync(directory, { recursive: true }).sort()
   for (const file of files) {
     if (
@@ -38,7 +43,10 @@ const refresh = () => {
     const slashPath = file.toString().replace(/\\/g, "/")
     config.files["/scripts/" + slashPath] = "./" + slashPath
   }
-  if (JSON.stringify(config.files) !== JSON.stringify(originalFiles)) {
+  if (options.packages !== undefined) {
+    config.packages = options.packages
+  }
+  if (JSON.stringify(config) !== JSON.stringify(originalConfig)) {
     writeFileSync(file, JSON.stringify(config, null, 4))
     console.log("✨ Refreshed config.json to include all Python files")
   }
@@ -102,19 +110,19 @@ const copyFirebase = () => {
   }
 }
 
-export default function CodeBattles(): Plugin {
+export default function CodeBattles(options: CodeBattlesOptions = {}): Plugin {
   return {
     name: "code-battles",
     buildStart() {
       symlinkCodeBattles()
       buildAPIDocumentation()
       copyFirebase()
-      refresh()
+      refresh(options)
     },
     configureServer(server) {
       const onFileChange = (f: string) => {
         if (f.endsWith(".py")) {
-          refresh()
+          refresh(options)
           server.ws.send({ type: "full-reload" })
         }
       }
