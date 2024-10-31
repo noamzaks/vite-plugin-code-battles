@@ -45,10 +45,9 @@ const refresh = () => {
 }
 
 const deleteSymlinkAndGitIgnore = (filename: string, target: string) => {
-  if (existsSync(filename)) {
-    rmSync(filename)
+  if (!existsSync(filename)) {
+    symlinkSync(target, filename, "dir")
   }
-  symlinkSync(target, filename, "dir")
   writeFileSync(join(filename, ".gitignore"), "*")
 }
 

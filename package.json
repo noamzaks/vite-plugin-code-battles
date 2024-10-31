@@ -3,7 +3,7 @@
   "version": "1.0.7",
   "description": "The vite plugin for Code Battles development",
   "repository": "https://github.com/noamzaks/vite-plugin-code-battles",
-  "author": "Noam Zaks <imnoamzaks@gmail.com>",
+  "author": "Noam Zaks <noam@noamzaks.com>",
   "license": "MIT",
   "type": "module",
   "main": "dist/index.js",
