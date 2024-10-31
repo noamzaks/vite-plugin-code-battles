@@ -121,7 +121,7 @@ export default function CodeBattles(options: CodeBattlesOptions = {}): Plugin {
     },
     configureServer(server) {
       const onFileChange = (f: string) => {
-        if (f.endsWith(".py")) {
+        if (f.endsWith(".py") && f.includes(join("public", "scripts"))) {
           refresh(options)
           server.ws.send({ type: "full-reload" })
         }
