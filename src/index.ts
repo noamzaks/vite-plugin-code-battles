@@ -13,13 +13,17 @@ import { chdir, exit } from "process"
 import type { Plugin } from "vite"
 
 interface CodeBattlesOptions {
-  /** Additional Python packages to install, see https://docs.pyscript.net/2023.12.1/user-guide/configuration/#packages */
-  packages?: string[]
+  documentation?: {
+    favicon?: string
+    footerText?: string
+    logo?: string
+    logoLink?: string
+  }
 }
 
 const dirname = resolve(".")
 
-const refresh = (options: CodeBattlesOptions) => {
+const refresh = (_: CodeBattlesOptions) => {
   chdir(dirname)
   const directory = join("public", "scripts")
   const packedFilePath = join(directory, "packed.py")
@@ -76,8 +80,22 @@ const symlinkCodeBattles = () => {
   return shouldRestart
 }
 
-const buildAPIDocumentation = () => {
+const buildAPIDocumentation = (options: CodeBattlesOptions) => {
   chdir(join(dirname, "public", "scripts"))
+  let args = ""
+  if (options.documentation?.footerText) {
+    args += `--footer-text ${JSON.stringify(options.documentation.footerText)} `
+  }
+  args += `--favicon ${JSON.stringify(
+    options.documentation?.favicon ?? `/images/logo.png`
+  )} `
+  args += `--logo ${JSON.stringify(
+    options.documentation?.logo ?? `/images/logo-transparent.png`
+  )} `
+  args += `--logo-link ${JSON.stringify(
+    options.documentation?.logoLink ?? `/`
+  )} `
+
   try {
     execSync(
       `pdoc api.py --no-show-source -t ${join(
@@ -87,7 +105,7 @@ const buildAPIDocumentation = () => {
         "code-battles",
         "dist",
         "pdoc-template"
-      )} -o ..`
+      )} ${args} -o ..`
     )
     rmSync(join("..", "index.html"))
     rmSync(join("..", "search.js"))
@@ -123,7 +141,7 @@ export default function CodeBattles(options: CodeBattlesOptions = {}): Plugin {
         )
         exit(-1)
       }
-      buildAPIDocumentation()
+      buildAPIDocumentation(options)
       copyFirebase()
       refresh(options)
     },
