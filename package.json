@@ -1,6 +1,6 @@
 {
   "name": "vite-plugin-code-battles",
-  "version": "1.0.9",
+  "version": "1.0.12",
   "description": "The vite plugin for Code Battles development",
   "repository": "https://github.com/noamzaks/vite-plugin-code-battles",
   "author": "Noam Zaks <noam@noamzaks.com>",
