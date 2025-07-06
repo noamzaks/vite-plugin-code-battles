@@ -147,7 +147,7 @@ const createConfig = (options: CodeBattlesOptions) => {
   chdir(join(dirname))
   const configFile = join("public", "config.json")
 
-  let originalConfig: any = {}
+  let originalConfig: any = null
   if (existsSync(configFile)) {
     originalConfig = JSON.parse(readFileSync(configFile).toString())
   }
